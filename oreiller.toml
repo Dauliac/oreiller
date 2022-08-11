@@ -1,0 +1,4 @@
+branch_coverage_level = 0.7724
+line_coverage_level = 0.937
+upgrade_config_after_check = true
+coverage_level_file_path = "coverage/cobertura-coverage.xml"
