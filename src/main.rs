@@ -70,7 +70,6 @@ fn has_coverage_decreased(required: &Config, coverage_level: &Cobertura) -> bool
     let mut branch_coverage_level_decreased = false;
     if required.branch_coverage_level > coverage_level.branch_rate {
         branch_coverage_level_decreased = true;
-        // println!("HQQQQQQQQ");
 
         log::warn!(
             "insuffisant branche level statement: {} > {}",
@@ -93,9 +92,22 @@ fn has_coverage_decreased(required: &Config, coverage_level: &Cobertura) -> bool
 
 fn quit_if_coverage_decreased(required: &Config, coverage_level: &Cobertura) {
     if has_coverage_decreased(required, coverage_level) {
-        quit("Your coverage is too low");
+        let mut let_coverage_decrease = false;
+        match std::env::var("OREILLER_LET_COVERAGE_DECREASE") {
+            Ok(variable) => {
+                if variable == "true" {
+                    let_coverage_decrease = true;
+                    log::info!("You setted $OREILLER_LET_COVERAGE_DECREASE, not a fatal error.");
+                }
+            }
+            Err(_) => {}
+        }
+        if !let_coverage_decrease {
+            quit("Your coverage is too low");
+        }
+    } else {
+        log::info!("Your coverage is ok");
     }
-    log::info!("Your coverage is ok");
 }
 
 fn has_coverage_increased(required: &Config, coverage_level: &Cobertura) -> bool {
@@ -167,7 +179,7 @@ fn write_new_coverage_level_if_required(config: Config, coverage_level: &Cobertu
 fn main() {
     simple_logger::init_with_level(log::Level::Info).unwrap();
 
-    let mut config = read_config();
+    let config = read_config();
     let coverage_level = read_coverages_levels(&config);
     quit_if_coverage_decreased(&config, &coverage_level);
     write_new_coverage_level_if_required(config, &coverage_level);
