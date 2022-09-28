@@ -133,10 +133,21 @@ fn write_new_coverage_level(config: Config) {
     let config = toml::to_string(&config).unwrap();
     match File::create(config_path) {
         Ok(mut file) => match file.write_all(config.as_bytes()) {
-            Ok(_) => (),
-            Err(error) => quit("Failed to write new config file"),
+            Ok(_) => {
+                log::info!(
+                    "New coverage level(s) were written into config file {}",
+                    &config_path,
+                );
+            }
+            Err(error) => {
+                log::error!("{}", error);
+                quit("Failed to write new config file")
+            }
         },
-        Err(error) => quit("Failed to write new config file"),
+        Err(error) => {
+            log::error!("{}", error);
+            quit("Failed to write new config file")
+        }
     }
 }
 
