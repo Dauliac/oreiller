@@ -103,6 +103,7 @@ fn quit_if_coverage_decreased(required: &Config, coverage_level: &Cobertura) {
             Err(_) => {}
         }
         if !let_coverage_decrease {
+            log::info!("You can set OREILLER_LET_COVERAGE_DECREASE='true' to allow failure");
             quit("Your coverage is too low");
         }
     } else {
